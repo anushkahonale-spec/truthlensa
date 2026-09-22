@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthLens | See the Truth Behind the Content</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-mark">T</span>
+            <span>TruthLens</span>
+        </div>
+
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#checkers">Check Content</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#about">About</a>
+        </div>
+    </nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+
+        <div class="hero-content">
+
+            <div class="badge">
+                AI-Powered Misinformation Detection
+            </div>
+
+            <h1>
+                See the truth<br>
+                behind the <span>content.</span>
+            </h1>
+
+            <p>
+                TruthLens helps you analyze news, social media claims,
+                and images using AI-powered detection and verification.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="{{ url_for('text_checker') }}" class="btn btn-primary">
+                 Check News
+                </a>
+                <a href="#image-checker" class="btn btn-secondary">
+                    Check Image
+                </a>
+            </div>
+
+        </div>
+
+        <div class="hero-card">
+
+            <div class="scan-line"></div>
+
+            <div class="lens-icon">
+                ◉
+            </div>
+
+            <h3>TruthLens Analysis</h3>
+
+            <p>
+                Analyze content before you believe or share it.
+            </p>
+
+            <div class="status">
+                <span></span>
+                Ready to analyze
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Checker Section -->
+    <section class="checkers" id="checkers">
+
+        <div class="section-heading">
+            <p class="small-title">ANALYZE CONTENT</p>
+
+            <h2>
+                What would you like<br>
+                to check?
+            </h2>
+
+            <p>
+                Choose the type of content you want TruthLens to analyze.
+            </p>
+        </div>
+
+
+        <div class="checker-grid">
+
+            <!-- Text Checker -->
+            <div class="checker-card" id="text-checker">
+
+                <div class="card-number">01</div>
+
+                <div class="card-icon">
+                    Aa
+                </div>
+
+                <h3>News & Text</h3>
+
+                <p>
+                    Paste a news article, social media post,
+                    headline, or claim and analyze its credibility.
+                </p>
+
+                <a href="{{ url_for('text_checker') }}" class="card-button">
+                Analyze Text →
+                </a>
+
+            </div>
+
+
+            <!-- Image Checker -->
+            <div class="checker-card" id="image-checker">
+
+                <div class="card-number">02</div>
+
+                <div class="card-icon">
+                    ◫
+                </div>
+
+                <h3>Images</h3>
+
+                <p>
+                    Upload an image to detect possible manipulation,
+                    AI generation, and visual inconsistencies.
+                </p>
+
+                <button class="card-button">
+                    Analyze Image →
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+
+        <div class="section-heading">
+            <p class="small-title">HOW IT WORKS</p>
+
+            <h2>
+                From content<br>
+                to clarity.
+            </h2>
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+                <span>01</span>
+                <h3>Submit</h3>
+                <p>
+                    Enter a claim, article, social media post,
+                    or upload an image.
+                </p>
+            </div>
+
+            <div class="step">
+                <span>02</span>
+                <h3>Analyze</h3>
+                <p>
+                    TruthLens examines patterns, signals,
+                    and available evidence.
+                </p>
+            </div>
+
+            <div class="step">
+                <span>03</span>
+                <h3>Understand</h3>
+                <p>
+                    Get a confidence score, key signals,
+                    and an easy-to-understand explanation.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+    <section class="about" id="about">
+
+        <div>
+            <p class="small-title">ABOUT TRUTHLENS</p>
+
+            <h2>
+                Don't just ask<br>
+                <span>"Is it real?"</span>
+            </h2>
+        </div>
+
+        <p>
+            TruthLens is designed to provide evidence-based signals
+            instead of blindly declaring content real or fake.
+            The system combines AI analysis with verification
+            techniques to help users make more informed decisions.
+        </p>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="footer-logo">
+            TruthLens
+        </div>
+
+        <p>
+            See the truth behind the content.
+        </p>
+
+        <p class="copyright">
+            © 2026 TruthLens. Academic Major Project.
+        </p>
+
+    </footer>
+
+</body>
+</html>

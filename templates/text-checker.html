@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TruthLens | Text Checker</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            TruthLens
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/text-checker">
+                Check Content
+            </a>
+
+            <a href="/#how-it-works">
+                How It Works
+            </a>
+
+            <a href="/#about">
+                About
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="checker-page">
+
+        <section class="checker-header">
+
+            <p class="eyebrow">
+                TEXT VERIFICATION
+            </p>
+
+            <h1>
+                Check the truth behind the story.
+            </h1>
+
+            <p class="checker-description">
+                Paste a news article, social media post,
+                or claim below. TruthLens analyzes the
+                language and evaluates available evidence.
+            </p>
+
+        </section>
+
+
+        <!-- ================= INPUT ================= -->
+
+        <section class="checker-card">
+
+            <div class="input-header">
+
+                <label for="newsText">
+                    Content to analyze
+                </label>
+
+                <span id="wordCount">
+                    0 words
+                </span>
+
+            </div>
+
+
+            <textarea
+                id="newsText"
+                placeholder="Paste the news article, social media post, or claim here..."
+                rows="12"
+            ></textarea>
+
+
+            <div class="input-footer">
+
+                <button
+                    type="button"
+                    id="clearButton"
+                    class="secondary-button"
+                >
+                    Clear
+                </button>
+
+                <button
+                    type="button"
+                    id="analyzeButton"
+                    class="primary-button"
+                >
+                    Analyze Content
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RESULT ================= -->
+
+        <section
+            id="resultBox"
+            class="result-box"
+            style="display: none;"
+        >
+
+            <div class="result-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        ANALYSIS RESULT
+                    </p>
+
+                    <h2 id="resultTitle">
+                        Result
+                    </h2>
+
+                </div>
+
+                <div class="confidence-box">
+
+                    <span>
+                        Language Model Confidence
+                    </span>
+
+                    <strong id="confidence">
+                        0%
+                    </strong>
+
+                    <small>
+                        Based on language patterns, not truth probability.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-message">
+
+                <p id="resultMessage">
+                    Analysis result will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- ================= CONTENT SIGNALS ================= -->
+
+            <div class="analysis-section">
+
+                <h3>
+                    Content Signals
+                </h3>
+
+                <div id="signalsList"></div>
+
+            </div>
+
+
+            <!-- ================= WEB VERIFICATION ================= -->
+
+            <div class="analysis-section">
+
+                <div class="section-heading-row">
+
+                    <div>
+
+                        <h3>
+                            Evidence Verification
+                        </h3>
+
+                        <p id="verificationMessage">
+                            Verification information will appear here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Verdict -->
+
+                <div
+                    id="verificationVerdict"
+                    class="verification-verdict"
+                ></div>
+
+
+                <!-- Verification analysis -->
+
+                <div
+                    id="verificationAnalysis"
+                    class="verification-analysis"
+                ></div>
+
+
+                <!-- Sources -->
+
+                <div
+                    id="sourcesList"
+                ></div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <p>
+            © 2026 TruthLens. See the truth behind the content.
+        </p>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+    const newsText =
+        document.getElementById("newsText");
+
+    const wordCount =
+        document.getElementById("wordCount");
+
+    const clearButton =
+        document.getElementById("clearButton");
+
+    const analyzeButton =
+        document.getElementById("analyzeButton");
+
+    const resultBox =
+        document.getElementById("resultBox");
+
+    const resultTitle =
+        document.getElementById("resultTitle");
+
+    const confidence =
+        document.getElementById("confidence");
+
+    const resultMessage =
+        document.getElementById("resultMessage");
+
+    const signalsList =
+        document.getElementById("signalsList");
+
+    const verificationMessage =
+        document.getElementById("verificationMessage");
+
+    const verificationVerdict =
+        document.getElementById("verificationVerdict");
+
+    const verificationAnalysis =
+        document.getElementById("verificationAnalysis");
+
+    const sourcesList =
+        document.getElementById("sourcesList");
+
+
+    // ==========================================
+    // WORD COUNTER
+    // ==========================================
+
+    newsText.addEventListener(
+        "input",
+        function () {
+
+            const text =
+                newsText.value.trim();
+
+            if (!text) {
+
+                wordCount.textContent =
+                    "0 words";
+
+                return;
+            }
+
+            const words =
+                text.split(/\s+/);
+
+            wordCount.textContent =
+                words.length +
+                (
+                    words.length === 1
+                        ? " word"
+                        : " words"
+                );
+        }
+    );
+
+
+    // ==========================================
+    // CLEAR BUTTON
+    // ==========================================
+
+    clearButton.addEventListener(
+        "click",
+        function () {
+
+            newsText.value = "";
+
+            wordCount.textContent =
+                "0 words";
+
+            resultBox.style.display =
+                "none";
+
+            signalsList.innerHTML =
+                "";
+
+            verificationVerdict.innerHTML =
+                "";
+
+            verificationAnalysis.innerHTML =
+                "";
+
+            sourcesList.innerHTML =
+                "";
+
+            verificationMessage.textContent =
+                "Verification information will appear here.";
+        }
+    );
+
+
+    // ==========================================
+    // ANALYZE BUTTON
+    // ==========================================
+
+    analyzeButton.addEventListener(
+        "click",
+        async function () {
+
+            const text =
+                newsText.value.trim();
+
+
+            if (!text) {
+
+                alert(
+                    "Please enter some content to analyze."
+                );
+
+                return;
+            }
+
+
+            // ======================================
+            // LOADING STATE
+            // ======================================
+
+            analyzeButton.disabled =
+                true;
+
+            analyzeButton.textContent =
+                "Analyzing...";
+
+            resultBox.style.display =
+                "block";
+
+            resultTitle.textContent =
+                "Analyzing content...";
+
+            confidence.textContent =
+                "—";
+
+            resultMessage.textContent =
+                "TruthLens is analyzing the content.";
+
+            signalsList.innerHTML =
+                "";
+
+            verificationVerdict.innerHTML =
+                "";
+
+            verificationAnalysis.innerHTML =
+                "";
+
+            sourcesList.innerHTML =
+                "";
+
+            verificationMessage.textContent =
+                "Checking available evidence...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/analyze-text",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                text: text
+                            })
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server returned HTTP " +
+                        response.status
+                    );
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "TruthLens result:",
+                    result
+                );
+
+
+                // ==================================
+                // MAIN RESULT
+                // ==================================
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Backend returns:
+                 *
+                 * supported
+                 * conflicting
+                 * uncertain
+                 *
+                 * So we map those directly.
+                 */
+
+                if (
+                    result.status ===
+                    "supported"
+                ) {
+
+                    resultTitle.textContent =
+                        "Supported";
+
+                }
+
+                else if (
+                    result.status ===
+                    "conflicting"
+                ) {
+
+                    resultTitle.textContent =
+                        "Conflicting / Unsupported";
+
+                }
+
+                else if (
+                    result.status ===
+                    "uncertain"
+                ) {
+
+                    resultTitle.textContent =
+                        "Uncertain";
+
+                }
+
+                else {
+
+                    resultTitle.textContent =
+                        "Uncertain";
+                }
+
+
+                // ==================================
+                // CONFIDENCE
+                // ==================================
+
+                if (
+                    typeof result.confidence ===
+                    "number"
+                ) {
+
+                    confidence.textContent =
+                        result.confidence.toFixed(2) +
+                        "%";
+
+                }
+
+                else {
+
+                    confidence.textContent =
+                        "—";
+                }
+
+
+                // ==================================
+                // MAIN MESSAGE
+                // ==================================
+
+                resultMessage.textContent =
+                    result.message ||
+                    "No explanation available.";
+
+
+                // ==================================
+                // CONTENT SIGNALS
+                // ==================================
+
+                if (
+                    result.signals &&
+                    result.signals.length > 0
+                ) {
+
+                    result.signals.forEach(
+                        function (signal) {
+
+                            const signalCard =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            signalCard.className =
+                                "signal-item";
+
+                            signalCard.textContent =
+                                signal;
+
+                            signalsList.appendChild(
+                                signalCard
+                            );
+
+                        }
+                    );
+
+                }
+
+                else {
+
+                    signalsList.innerHTML =
+                        "<p>No content signals available.</p>";
+                }
+
+
+                // ==================================
+                // EVIDENCE VERIFICATION
+                // ==================================
+
+                const verification =
+                    result.verification;
+
+
+                if (!verification) {
+
+                    verificationMessage.textContent =
+                        "No verification information was returned.";
+
+                    verificationVerdict.innerHTML =
+                        "";
+
+                    verificationAnalysis.innerHTML =
+                        "";
+
+                    sourcesList.innerHTML =
+                        "";
+
+                    return;
+                }
+
+
+                // ==================================
+                // NORMALIZE VERDICT
+                // ==================================
+
+                /*
+                 * Gemini returns:
+                 *
+                 * SUPPORTED
+                 * CONFLICTING
+                 * UNCERTAIN
+                 *
+                 * Backend converts status to:
+                 *
+                 * supported
+                 * conflicting
+                 * uncertain
+                 */
+
+                const verdict =
+                    String(
+                        verification.verdict ||
+                        verification.status ||
+                        "UNCERTAIN"
+                    ).toLowerCase();
+
+
+                // ==================================
+                // SUPPORTED
+                // ==================================
+
+                if (
+                    verdict ===
+                    "supported"
+                ) {
+
+                    verificationMessage.textContent =
+                        "Gemini found evidence supporting this claim.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            ✓ Evidence Supports the Claim
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // CONFLICTING / UNSUPPORTED
+                // ==================================
+
+                else if (
+                    verdict ===
+                    "conflicting"
+                ) {
+
+                    verificationMessage.textContent =
+                        "Gemini found evidence that conflicts with this claim.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            ✗ Conflicting / Unsupported
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // UNCERTAIN
+                // ==================================
+
+                else if (
+                    verdict ===
+                    "uncertain"
+                ) {
+
+                    verificationMessage.textContent =
+                        "There is not enough reliable evidence to determine the claim.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            ? Insufficient Evidence
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // NO SOURCES
+                // ==================================
+
+                else if (
+                    verification.status ===
+                    "no_sources"
+                ) {
+
+                    verificationMessage.textContent =
+                        "No matching recent sources were found.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            No Matching Sources Found
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // SOURCES FOUND
+                // ==================================
+
+                else if (
+                    verification.status ===
+                    "sources_found"
+                ) {
+
+                    verificationMessage.textContent =
+                        "Related sources were found, but they do not by themselves prove the claim.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            Related Sources Found
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // VERIFICATION UNAVAILABLE
+                // ==================================
+
+                else if (
+                    verification.status ===
+                    "verification_unavailable"
+                ) {
+
+                    verificationMessage.textContent =
+                        "Real-time verification is temporarily unavailable.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            Verification Unavailable
+                        </strong>
+                    `;
+
+                }
+
+
+                // ==================================
+                // DEFAULT
+                // ==================================
+
+                else {
+
+                    verificationMessage.textContent =
+                        "TruthLens could not determine the verification status.";
+
+                    verificationVerdict.innerHTML = `
+                        <strong>
+                            Verification Unavailable
+                        </strong>
+                    `;
+                }
+
+
+                // ==================================
+                // VERIFICATION ANALYSIS
+                // ==================================
+
+                const analysis =
+                    verification.analysis ||
+                    "";
+
+
+                if (analysis) {
+
+                    verificationAnalysis.innerHTML =
+                        escapeHtml(
+                            analysis
+                        ).replace(
+                            /\n/g,
+                            "<br>"
+                        );
+
+                }
+
+                else {
+
+                    verificationAnalysis.innerHTML =
+                        "";
+                }
+
+
+                // ==================================
+                // SOURCES
+                // ==================================
+
+                const sources =
+                    verification.sources || [];
+
+
+                if (
+                    sources.length === 0
+                ) {
+
+                    sourcesList.innerHTML = `
+                        <div class="no-sources">
+                            <p>
+                                No source citations were returned.
+                            </p>
+                        </div>
+                    `;
+
+                }
+
+                else {
+
+                    sources.forEach(
+                        function (source) {
+
+                            const sourceCard =
+                                document.createElement(
+                                    "article"
+                                );
+
+                            sourceCard.className =
+                                "source-card";
+
+
+                            const title =
+                                source.title ||
+                                "Source";
+
+
+                            sourceCard.innerHTML = `
+
+                                <h4>
+                                    ${escapeHtml(title)}
+                                </h4>
+
+                                ${
+                                    source.url
+                                        ? `
+                                            <a
+                                                href="${escapeAttribute(source.url)}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="source-link"
+                                            >
+                                                Open source →
+                                            </a>
+                                          `
+                                        : ""
+                                }
+
+                            `;
+
+
+                            sourcesList.appendChild(
+                                sourceCard
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Analysis error:",
+                    error
+                );
+
+
+                resultTitle.textContent =
+                    "Analysis Error";
+
+                confidence.textContent =
+                    "—";
+
+                resultMessage.textContent =
+                    "Something went wrong while analyzing the content.";
+
+                verificationMessage.textContent =
+                    "Web verification could not be completed.";
+
+                verificationVerdict.innerHTML =
+                    "";
+
+                verificationAnalysis.innerHTML =
+                    "";
+
+                sourcesList.innerHTML =
+                    "";
+
+            }
+
+            finally {
+
+                analyzeButton.disabled =
+                    false;
+
+                analyzeButton.textContent =
+                    "Analyze Content";
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // HTML ESCAPING
+    // ==========================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+    }
+
+
+    function escapeAttribute(value) {
+
+        return String(value)
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            );
+    }
+
+</script>
+
+</body>
+
+</html>
